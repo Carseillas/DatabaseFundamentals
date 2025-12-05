@@ -57,10 +57,24 @@ button:focus, button:focus-visible {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: #000000;
+    background-color: #999999;
   }
   button {
+    color: #000000;
     background-color: #f9f9f9;
+    border-color: #000000;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #fafafa;
+    background-color: #1f1f1f;
+  }
+  button {
+    color: #f9f9f9;
+    background-color: #1f1f1f;
+    border-color: #fafafa;
   }
 }
