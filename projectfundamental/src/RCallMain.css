@@ -1,0 +1,49 @@
+.classlabel {
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-left: 150px;
+}
+.datelabel {
+    font-weight: bold;
+    margin-bottom: 5px;
+    margin-left: 150px;
+}
+.studentlabel {
+    position: relative;
+    margin-left: 150px;
+}
+.hourlabel {
+    position: relative;
+    margin-left: 150px;
+}
+.rdate {
+    position: relative;
+    margin-left: 150px;
+}
+.class {
+    position: relative;
+    margin-left: 150px;
+}
+.student {
+    position: relative;
+    margin-left: 150px;
+}
+.hour {
+    position: relative;
+    margin-left: 150px;
+}
+h1 {
+    text-align: center;
+    margin-bottom: 75px;
+}
+.submit{
+    position: relative;
+    left: 100px;
+}
+.statuslabel {
+    font-weight: bold;
+    font-size: large;
+    position: relative;
+    margin-top: 50px;
+    margin-left: 100px;
+}

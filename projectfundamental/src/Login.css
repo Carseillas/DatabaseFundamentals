@@ -1,0 +1,23 @@
+.form {
+  display: grid;
+  position: relative;
+  bottom: 100px;
+}
+
+.userlabel {
+  font-size: large;
+}
+
+.username {
+  display: grid;
+}
+
+.passlabel {
+  font-size: large;
+}
+
+.password {
+  position: relative;
+  top: 15px;
+  display: grid;
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import './App.css'
+import './Login.css'
 
 function Login() {  
 
@@ -17,9 +18,18 @@ function Login() {
     });
     const data = await response.json();
     if (data.success) {
-      setMessage("Login successful!");
-      localStorage.setItem("loggedIn", "true");
-      navigate("/RCallMain");
+      if(data.message === "Admin Login"){
+        setMessage("Admin Login Successful!");
+        localStorage.setItem("loggedIn", "true");
+        navigate("/Admin");
+        return;
+      }
+      else{
+        setMessage("Login successful!");
+        localStorage.setItem("loggedIn", "true");
+        navigate("/RCallMain")
+        return;
+      }
     } else {
       setMessage("Wrong username or password.");
       localStorage.setItem("loggedIn", "false");

@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "name": "Alice Johnson",
+        "class": "9A"
+    },
+    {
+        "id": 2,
+        "name": "Bob Smith",
+        "class": "10B"
+    },
+    {
+        "id": 3,
+        "name": "Charlie Brown",
+        "class": "11C"
+    }
+]
