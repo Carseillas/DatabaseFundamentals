@@ -5,7 +5,7 @@ import "./Admin.css";
 
 function Admin() {
 
-    const loggedIn = localStorage.getItem("loggedIn") === "true";
+    const loggedIn = sessionStorage.getItem("loggedIn") === "true";
     const [teachers, setTeachers] = useState([]);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");

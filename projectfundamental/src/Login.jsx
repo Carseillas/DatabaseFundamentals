@@ -20,19 +20,19 @@ function Login() {
     if (data.success) {
       if(data.message === "Admin Login"){
         setMessage("Admin Login Successful!");
-        localStorage.setItem("loggedIn", "true");
+        sessionStorage.setItem("loggedIn", "true");
         navigate("/Admin");
         return;
       }
       else{
         setMessage("Login successful!");
-        localStorage.setItem("loggedIn", "true");
+        sessionStorage.setItem("loggedIn", "true");
         navigate("/RCallMain")
         return;
       }
     } else {
       setMessage("Wrong username or password.");
-      localStorage.setItem("loggedIn", "false");
+      sessionStorage.setItem("loggedIn", "false");
     }
   }
 

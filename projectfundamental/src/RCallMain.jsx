@@ -9,7 +9,7 @@ function RCall() {
     const [student, setStudent] = useState("");
     const [classHour, setClassHour] = useState("");
     const [status, setStatus] = useState("");
-    const loggedIn = localStorage.getItem("loggedIn") === "true";
+    const loggedIn = sessionStorage.getItem("loggedIn") === "true";
 
     let options = [];
 
