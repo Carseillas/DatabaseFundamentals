@@ -17,7 +17,5 @@
 }
 
 .password {
-  position: relative;
-  top: 15px;
   display: grid;
 }

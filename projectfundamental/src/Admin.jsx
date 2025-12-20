@@ -5,12 +5,16 @@ import "./Admin.css";
 
 function Admin() {
 
-    const loggedIn = sessionStorage.getItem("loggedIn") === "true";
+    const adminloggedIn = sessionStorage.getItem("adminloggedIn") === "true";
     const [teachers, setTeachers] = useState([]);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [students, setStudents] = useState([]);
+    const [name, setName] = useState("");
+    const [studentClass, setStudentClass] = useState("9A");
+    const [studentNum, setStudentNum] = useState("");
 
-    if (!loggedIn) {
+    if (!adminloggedIn) {
         return <Navigate to="/" />;
     }
 
@@ -20,6 +24,12 @@ function Admin() {
         .then(data => setTeachers(data));
     }, []);
 
+    useEffect(() => {
+        fetch("http://localhost:5000/students")
+        .then(res => res.json())
+        .then(data => setStudents(data));
+    }, []);
+
     // Load teachers from users.json
     async function loadTeachers() {
       const res = await fetch("http://localhost:5000/teachers");
@@ -27,8 +37,19 @@ function Admin() {
       setTeachers(data);
     }
 
+    // Load students from users.json
+    async function loadStudents() {
+      const res = await fetch("http://localhost:5000/students");
+      const data = await res.json();
+      setStudents(data);
+    }
+
     useEffect(() => {
       loadTeachers();
+    }, []);
+
+    useEffect(() => {
+      loadStudents();
     }, []);
 
     // Add teacher
@@ -50,6 +71,26 @@ function Admin() {
       loadTeachers(); // 🔄 reload from users.json
     }
 
+    // Add student
+    async function addStudent() {
+      const res = await fetch("http://localhost:5000/students", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, studentClass, studentNum })
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        alert(data.message);
+        return;
+      }
+
+      setName("");
+      setStudentClass("");
+      setStudentNum("");
+      loadStudents(); // 🔄 reload from students.json
+    }
+
     // Delete teacher
     async function deleteTeacher(username) {
       await fetch(`http://localhost:5000/teachers/${username}`, {
@@ -59,25 +100,34 @@ function Admin() {
       loadTeachers(); // 🔄 reload from users.json
     }
 
+    // Delete student
+    async function deleteStudent(studentNum) {
+      await fetch(`http://localhost:5000/students/${studentNum}`, {
+        method: "DELETE"
+      });
+
+      loadStudents(); // 🔄 reload from students.json
+    }
+
 
     return (
         <div>
-            <h1>ADMIN PANEL</h1>
+            <h1>ADMIN PANELI</h1>
 
-            <h2>Add Teacher</h2>
+            <h2>Öğretmen Ekle</h2>
             <input
-              placeholder="Username"
+              placeholder="Kullanıcı Adı"
               value={username}
               onChange={e => setUsername(e.target.value)}
             />
             <input
-              placeholder="Password"
+              placeholder="Şifre"
               value={password}
               onChange={e => setPassword(e.target.value)}
             />
-            <button className='addButton' onClick={addTeacher}>Add</button>
+            <button className='addButton' onClick={addTeacher}>Ekle</button>
 
-            <h2>Teachers</h2>
+            <h2>Öğretmenler</h2>
             <ul>
               {teachers.map(t => (
                 <li key={t.username}>
@@ -86,6 +136,63 @@ function Admin() {
                 </li>
               ))}
             </ul>
+            <h2>Öğrenci Ekle</h2>
+            <input
+              placeholder="İsim"
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
+            <select value={studentClass} defaultValue={""} onChange={(e) => setStudentClass(e.target.value)}>
+                <option value="9A">9A</option>
+                <option value="9B">9B</option>
+                <option value="9C">9C</option>
+                <option value="9D">9D</option>
+                <option value="9E">9E</option>
+                <option value="9F">9F</option>
+                <option value="9G">9G</option>
+                <option value="10A">10A</option>
+                <option value="10B">10B</option>
+                <option value="10C">10C</option>
+                <option value="10D">10D</option>
+                <option value="10E">10E</option>
+                <option value="10F">10F</option>
+                <option value="10G">10F</option>
+                <option value="11A">11A</option>
+                <option value="11B">11B</option>
+                <option value="11C">11C</option>
+                <option value="11D">11D</option>
+                <option value="11E">11E</option>
+                <option value="11F">11F</option>
+                <option value="11G">11G</option>
+                <option value="12A">12A</option>
+                <option value="12B">12B</option>
+                <option value="12C">12C</option>
+                <option value="12D">12D</option>
+                <option value="12E">12E</option>
+                <option value="12F">12F</option>
+                <option value="12G">12G</option>
+            </select>
+            <input
+              placeholder="Numara"
+              value={studentNum}
+              onChange={e => setStudentNum(e.target.value)}
+            />
+            <button className='addButton' onClick={addStudent}>Ekle</button>
+            <h2>Öğrenciler</h2>
+            <ul>
+              {students.map(s => (
+                <li key={s.studentNum}>
+                  {s.name} - {s.studentClass}
+                  <button className='delButton' onClick={() => deleteStudent(s.studentNum)}>❌</button>
+                </li>
+              ))}
+            </ul>
+            {/* Export buttons */}
+            <button onClick={() => {
+              window.location.href = "http://localhost:5000/export-all";
+            }}>
+              Yoklamaları Excel Olarak Dışa Aktar
+            </button>
         </div>
   );
 }

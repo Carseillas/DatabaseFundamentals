@@ -1,34 +1,69 @@
 import { useState, useEffect} from 'react';
-import { Navigate } from 'react-router-dom';
+import { data, Navigate } from 'react-router-dom';
 import "./RCallMain.css";
 
 function RCall() {
 
     const [date, setDate] = useState("");
     const [classNum, setClassNum] = useState("");
-    const [student, setStudent] = useState("");
+    const [students, setStudents] = useState([]);
+    const [selectedStudents, setSelectedStudents] = useState([]);
     const [classHour, setClassHour] = useState("");
     const [status, setStatus] = useState("");
-    const loggedIn = sessionStorage.getItem("loggedIn") === "true";
+    const [subject, setSubject] = useState("");
+    const [note, setNote] = useState("");
+    const teacherloggedIn = sessionStorage.getItem("teacherloggedIn") === "true";
 
-    let options = [];
-
-    for (let i = 1; i <= 30; i++) {
-        options.push(<option key={i} value={`Student${i}`}>{`Student${i}`}</option>);
-    }
-
-    if (!loggedIn) {
+    if (!teacherloggedIn) {
         return <Navigate to="/" />;
     }
 
+    useEffect(() => {
+        fetch("http://localhost:5000/students")
+            .then(res => res.json())
+            .then(data => {
+        console.log("STUDENTS FROM SERVER:", data);
+        setStudents(data);
+        });
+    }, []);
+
+    const filteredStudents = students.filter(
+        s => s.studentClass === classNum
+    );
+
     async function submitRollCall() {
-        setStatus("Roll Call Submitted!");
+        if (!date || !classNum  || !classHour || !subject || !note) {
+            setStatus("Please fill in all fields.");
+            return;
+        }
+        const absentStudents = selectedStudents.map(num => Number(num));
+        const res = await fetch("http://localhost:5000/rollcall", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            classNum,
+            date,
+            hour: classHour,
+            subject,
+            note,
+            absentStudents
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          setStatus("Roll call saved ✅");
+          setSelectedStudents([]);
+        } else {
+          setStatus("Error saving roll call ❌");
+        }
     }
 
     return (
         <div>
-            <h1>ROLL CALL MAIN PAGE</h1>
-            <h2 for="rdate" className="datelabel">Select Date:</h2><br></br>
+            <h1>Yoklama Sayfası</h1>
+            <h2 className="datelabel">Tarih Seç:</h2><br></br>
             <input
                 className='rdate'
                 type="date"
@@ -38,8 +73,8 @@ function RCall() {
             </input>
             <br></br>
             <br></br>
-            <h2 for="class" className="classlabel">Select Class:</h2><br></br>
-            <select id="class" name="class" className="class" value={classNum} onChange={(e) => setClassNum(e.target.value)}>
+            <h2 className="classlabel">Sınıf:</h2><br></br>
+            <select id="class" name="class" className="class" value={classNum} defaultValue={"9A"} onChange={(e) => setClassNum(e.target.value)}>
                 <option value="9A">9A</option>
                 <option value="9B">9B</option>
                 <option value="9C">9C</option>
@@ -69,7 +104,7 @@ function RCall() {
                 <option value="12F">12F</option>
                 <option value="12G">12G</option>
             </select>
-            <h2 for="hour" className="hourlabel">Select Hour:</h2>
+            <h2 className="hourlabel">Ders Saati:</h2>
             <select id="hour" name="hour" className="hour" value={classHour} onChange={(e) => setClassHour(e.target.value)}>
                 <option value="1">1.</option>
                 <option value="2">2.</option>
@@ -80,15 +115,54 @@ function RCall() {
                 <option value="7">7.</option>
                 <option value="8">8.</option>  
             </select>
-            <h2 for="student" className="studentlabel">Select Student:</h2><br></br>
-            <select id="student" name="student" className="student" value={student} onChange={(e) => setStudent(e.target.value)} multiple>
-                options
+            <select name="subject" className="subject" value={subject} onChange={(e) => setSubject(e.target.value)}>
+                <option value="Math">Matematik</option>
+                <option value="Physics">Fizik</option>
+                <option value="Chemistry">Kimya</option>
+                <option value="Biology">Biyoloji</option>
+                <option value="History">Tarih</option>
+                <option value="Geography">Coğrafya</option>
+                <option value="Literature">Türk Dili ve Edebiyatı</option>
+                <option value="English">İngilizce</option>
+                <option value="PE">Beden Eğitimi</option>
+                <option value="Art">Görsel Sanatlar</option>
+                <option value="Music">Müzik</option>
+                <option value="ComputerScience">Bilişim Teknolojileri</option>
+                <option value="Religion">Din Kültürü ve Ahlak Bilgisi</option>
+            </select>
+            <br></br><br></br>
+            <h2 className="studentlabel">Öğrenciler:</h2><br></br>
+            <select
+              className="student"
+              multiple
+              value={selectedStudents}
+              onChange={(e) =>
+                setSelectedStudents(
+                  Array.from(e.target.selectedOptions, o => o.value)
+                )
+              }
+            >
+              {filteredStudents.length === 0 && (
+                <option disabled>Öğrenci Bulunamadı</option>
+              )}
+
+              {filteredStudents.map(s => (
+                <option
+                  key={s.studentNum}
+                  value={String(s.studentNum)}
+                >
+                  {s.name} ({s.studentNum})
+                </option>
+              ))}
             </select><br></br>
+            <input type="text" className="note" placeholder="Açıklama" value={note} onChange={(e) => setNote(e.target.value)}></input><br></br>
+            <p>Sınıf Toplamı: {filteredStudents.length}</p>
+            <p>Yok Öğrenci Sayısı: {selectedStudents.length}</p>
             <br></br>
-            <button type="submit" value="Submit" className='submit' onClick={submitRollCall}>Submit Roll Call</button><br></br>
-            <label for="status" className="statuslabel">Status:{status}</label><br></br>
+            <button type="submit" value="Submit" className='submit' onClick={submitRollCall}>Kaydet!</button><br></br>
+            <label className="statuslabel">Durum:{status}</label><br></br>
         </div>
     );
 }
 
-export default RCall
+export default RCall;

@@ -20,43 +20,44 @@ function Login() {
     if (data.success) {
       if(data.message === "Admin Login"){
         setMessage("Admin Login Successful!");
-        sessionStorage.setItem("loggedIn", "true");
+        sessionStorage.setItem("adminloggedIn", "true");
         navigate("/Admin");
         return;
       }
       else{
         setMessage("Login successful!");
-        sessionStorage.setItem("loggedIn", "true");
+        sessionStorage.setItem("teacherloggedIn", "true");
         navigate("/RCallMain")
         return;
       }
     } else {
       setMessage("Wrong username or password.");
-      sessionStorage.setItem("loggedIn", "false");
+      sessionStorage.setItem("adminloggedIn", "false");
+      sessionStorage.setItem("teacherloggedIn", "false");
     }
   }
 
   return (
     <>
       <form className="form" onSubmit={(e) => e.preventDefault()}>
-        <h1>TEACHER LOGIN</h1>
+        <h1>Giriş</h1>
         <div className="username">
-          <label for="username" className="userlabel">Teacher Username:</label>
+          <label for="username" className="userlabel">Kullanıcı Adı:</label>
           <input 
           type="username" 
           id="username"  
-          placeholder="Username"  
+          placeholder="Kullanıcı Adı"  
           size={50}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           />
-        </div>
-        <div className="password">
-          <label for="password" className="passlabel">Password:</label>
+        </div><br />
+        <div className="Şifre">
+          <label for="password" className="passlabel">Şifre:</label><br></br>
           <input 
           type="password" 
           id="password"  
-          placeholder="Password"  
+          placeholder="Şifre"  
           size={50}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -66,7 +67,7 @@ function Login() {
         <br />
         
         <div className="button">
-          <button type="button" onClick={logIn}>Login</button>
+          <button type="button" onClick={logIn}>Giriş</button>
         </div>
         <p>{message}</p>
       </form>
