@@ -1,21 +1,39 @@
-const express = require("express");
-const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
-const XLSX = require("xlsx");
-const archiver = require("archiver");
+import express from "express";
+import cors from "cors";
+import fs from "fs";
+import XLSX from "xlsx";
+import archiver from "archiver";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const app = express();
+const PORT = 5000;
+const HOST = "0.0.0.0";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const usersFile = path.join(__dirname, "users.json");
 const studentsFile = path.join(__dirname, "students.json");
 const rollcallsDir = path.join(__dirname, "rollcalls");
+
+
+// Ensure data files and directories exist
+if (!fs.existsSync(usersFile)) {
+  fs.writeFileSync(usersFile, "[]");
+}
+if (!fs.existsSync(studentsFile)) {
+  fs.writeFileSync(studentsFile, "[]");
+}
 
 if (!fs.existsSync(rollcallsDir)) {
   fs.mkdirSync(rollcallsDir);
 }
 
+const app = express();
 app.use(cors());       // Allow React to access the server
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, "public")));
+
 
 function readUsers() {
   return JSON.parse(fs.readFileSync(usersFile, "utf-8"));
@@ -102,7 +120,7 @@ app.post("/rollcall", (req, res) => {
     return res.status(400).json({ success: false });
   }
 
-  const filePath = path.join(rollcallsDir, `${classNum}.json`);
+  const filePath = path.join(rollcallsDir, `${classNum,date}.json`);
 
   let data = {};
 
@@ -256,5 +274,10 @@ app.get("/export-all", (req, res) => {
   archive.finalize(); // 🔥 THIS MUST RUN
 });
 
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+app.listen(PORT, HOST, () => {
+  console.log(`Server running on http://${HOST}:${PORT}`);
+});

@@ -19,7 +19,7 @@ function RCall() {
     }
 
     useEffect(() => {
-        fetch("http://localhost:5000/students")
+        fetch(`${import.meta.env.VITE_API_URL}/students`)
             .then(res => res.json())
             .then(data => {
         console.log("STUDENTS FROM SERVER:", data);
@@ -37,7 +37,7 @@ function RCall() {
             return;
         }
         const absentStudents = selectedStudents.map(num => Number(num));
-        const res = await fetch("http://localhost:5000/rollcall", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/rollcall`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -53,10 +53,10 @@ function RCall() {
         const data = await res.json();
 
         if (data.success) {
-          setStatus("Roll call saved ✅");
+          setStatus("Yoklama Kaydedildi ✅");
           setSelectedStudents([]);
         } else {
-          setStatus("Error saving roll call ❌");
+          setStatus("Bir Sorun Oluştu ❌");
         }
     }
 

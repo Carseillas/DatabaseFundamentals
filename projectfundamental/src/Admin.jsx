@@ -19,27 +19,27 @@ function Admin() {
     }
 
     useEffect(() => {
-        fetch("http://localhost:5000/teachers")
+        fetch(`${import.meta.env.VITE_API_URL}/teachers`)
         .then(res => res.json())
         .then(data => setTeachers(data));
     }, []);
 
     useEffect(() => {
-        fetch("http://localhost:5000/students")
+        fetch(`${import.meta.env.VITE_API_URL}/students`)
         .then(res => res.json())
         .then(data => setStudents(data));
     }, []);
 
     // Load teachers from users.json
     async function loadTeachers() {
-      const res = await fetch("http://localhost:5000/teachers");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/teachers`);
       const data = await res.json();
       setTeachers(data);
     }
 
     // Load students from users.json
     async function loadStudents() {
-      const res = await fetch("http://localhost:5000/students");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/students`);
       const data = await res.json();
       setStudents(data);
     }
@@ -54,7 +54,7 @@ function Admin() {
 
     // Add teacher
     async function addTeacher() {
-      const res = await fetch("http://localhost:5000/teachers", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/teachers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
@@ -73,7 +73,7 @@ function Admin() {
 
     // Add student
     async function addStudent() {
-      const res = await fetch("http://localhost:5000/students", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/students`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, studentClass, studentNum })
@@ -93,7 +93,7 @@ function Admin() {
 
     // Delete teacher
     async function deleteTeacher(username) {
-      await fetch(`http://localhost:5000/teachers/${username}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/teachers/${username}`, {
         method: "DELETE"
       });
 
@@ -102,7 +102,7 @@ function Admin() {
 
     // Delete student
     async function deleteStudent(studentNum) {
-      await fetch(`http://localhost:5000/students/${studentNum}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/students/${studentNum}`, {
         method: "DELETE"
       });
 
@@ -189,7 +189,7 @@ function Admin() {
             </ul>
             {/* Export buttons */}
             <button onClick={() => {
-              window.location.href = "http://localhost:5000/export-all";
+              window.location.href = `${import.meta.env.VITE_API_URL}/export-all`;
             }}>
               Yoklamaları Excel Olarak Dışa Aktar
             </button>
