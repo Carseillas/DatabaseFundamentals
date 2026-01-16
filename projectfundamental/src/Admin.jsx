@@ -5,7 +5,8 @@ import "./Admin.css";
 
 function Admin() {
 
-    const adminloggedIn = sessionStorage.getItem("adminloggedIn") === "true";
+    const role = sessionStorage.getItem("role");
+    const token = sessionStorage.getItem("token");
     const [teachers, setTeachers] = useState([]);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -14,8 +15,8 @@ function Admin() {
     const [studentClass, setStudentClass] = useState("9A");
     const [studentNum, setStudentNum] = useState("");
 
-    if (!adminloggedIn) {
-        return <Navigate to="/" />;
+    if (role !== "admin" || !token) {
+      return <Navigate to="/" />;
     }
 
     useEffect(() => {
@@ -32,7 +33,18 @@ function Admin() {
 
     // Load teachers from users.json
     async function loadTeachers() {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/teachers`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/teachers`, {
+        headers: {
+          Authorization: sessionStorage.getItem("token")
+        }
+      });
+    
+      if (!res.ok) {
+        console.error("Forbidden");
+        setTeachers([]); // prevent crash
+        return;
+      }
+    
       const data = await res.json();
       setTeachers(data);
     }
@@ -56,7 +68,10 @@ function Admin() {
     async function addTeacher() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/teachers`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: sessionStorage.getItem("token")
+        },
         body: JSON.stringify({ username, password })
       });
 
@@ -75,7 +90,10 @@ function Admin() {
     async function addStudent() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/students`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token
+        },
         body: JSON.stringify({ name, studentClass, studentNum })
       });
 
@@ -94,7 +112,10 @@ function Admin() {
     // Delete teacher
     async function deleteTeacher(username) {
       await fetch(`${import.meta.env.VITE_API_URL}/teachers/${username}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          Authorization: sessionStorage.getItem("token")
+        }
       });
 
       loadTeachers(); // 🔄 reload from users.json
@@ -129,10 +150,10 @@ function Admin() {
 
             <h2>Öğretmenler</h2>
             <ul>
-              {teachers.map(t => (
+              {Array.isArray(teachers) && teachers.map(t => (
                 <li key={t.username}>
                   {t.username}
-                  <button className='delButton' onClick={() => deleteTeacher(t.username)}>❌</button>
+                  <button onClick={() => deleteTeacher(t.username)}>❌</button>
                 </li>
               ))}
             </ul>
@@ -192,6 +213,12 @@ function Admin() {
               window.location.href = `${import.meta.env.VITE_API_URL}/export-all`;
             }}>
               Yoklamaları Excel Olarak Dışa Aktar
+            </button>
+            <button onClick={() => {
+              sessionStorage.clear();
+              window.location.href = "/";
+            }}>
+              Çıkış Yap
             </button>
         </div>
   );

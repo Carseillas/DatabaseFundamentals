@@ -1,6 +1,8 @@
 [
   {
-    "username": "1",
-    "password": "1"
+    "username": "admin",
+    "password": "$2b$10$YMeZ3ykP4fYDHWO5ErHefuzz95LVQJQMANcvB.8F2xk3/kqX7WUqi",
+    "role": "admin",
+    "token": "1c8b0b19-bf2c-4ffd-8e76-9e2fd5a7fb46"
   }
 ]

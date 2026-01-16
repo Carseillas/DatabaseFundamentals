@@ -5,6 +5,9 @@ import XLSX from "xlsx";
 import archiver from "archiver";
 import path from "path";
 import { fileURLToPath } from "url";
+import bcrypt from "bcrypt";
+import crypto from "crypto";
+
 
 const PORT = 5000;
 const HOST = "0.0.0.0";
@@ -52,30 +55,43 @@ function writeStudents(students) {
 }
 
 // Login endpoint
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-
-  // Admin (hardcoded)
-  if (username === "admin" && password === "selcukecza") {
-    return res.json({ success: true, message: "Admin Login" });
-  }
-
-  // Teachers (from users.json)
   const users = readUsers();
-  const user = users.find(
-    u => u.username === username && u.password === password
-  );
 
-  if (user) {
-    return res.json({ success: true, message: "Login successful" });
+  const user = users.find(u => u.username === username);
+  if (!user) {
+    return res.json({ success: false });
   }
 
-  res.json({ success: false, message: "Invalid username or password" });
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    return res.json({ success: false });
+  }
+  
+  const token = crypto.randomUUID();
+
+  user.token = token;
+  writeUsers(users);
+
+  return res.json({
+    success: true,
+    role: user.role,
+    token
+  });
 });
 
 app.get("/teachers", (req, res) => {
+  const token = req.headers.authorization;
   const users = readUsers();
-  res.json(users);
+
+  const admin = users.find(u => u.token === token && u.role === "admin");
+
+  if (!admin) {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
+  res.json(users.filter(u => u.role === "teacher"));
 });
 
 app.get("/students", (req, res) => {
@@ -83,7 +99,7 @@ app.get("/students", (req, res) => {
   res.json(students);
 });
 
-app.post("/teachers", (req, res) => {
+app.post("/teachers", async (req, res) => {
   const { username, password } = req.body;
 
   const users = readUsers();
@@ -92,7 +108,8 @@ app.post("/teachers", (req, res) => {
     return res.json({ success: false, message: "Teacher already exists" });
   }
 
-  users.push({ username, password });
+  const hashedPassword = await bcrypt.hash(password, 10);
+  users.push({ username, password: hashedPassword, role: "teacher" });
   writeUsers(users);
 
   res.json({ success: true });

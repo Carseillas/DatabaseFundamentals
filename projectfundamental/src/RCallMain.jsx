@@ -3,7 +3,8 @@ import { data, Navigate } from 'react-router-dom';
 import "./RCallMain.css";
 
 function RCall() {
-
+    const role = sessionStorage.getItem("role");
+    const token = sessionStorage.getItem("token");
     const [date, setDate] = useState("");
     const [classNum, setClassNum] = useState("");
     const [students, setStudents] = useState([]);
@@ -12,10 +13,9 @@ function RCall() {
     const [status, setStatus] = useState("");
     const [subject, setSubject] = useState("");
     const [note, setNote] = useState("");
-    const teacherloggedIn = sessionStorage.getItem("teacherloggedIn") === "true";
 
-    if (!teacherloggedIn) {
-        return <Navigate to="/" />;
+    if (role !== "teacher" || !token) {
+      return <Navigate to="/" />;
     }
 
     useEffect(() => {
@@ -161,6 +161,12 @@ function RCall() {
             <br></br>
             <button type="submit" value="Submit" className='submit' onClick={submitRollCall}>Kaydet!</button><br></br>
             <label className="statuslabel">Durum:{status}</label><br></br>
+            <button onClick={() => {
+              sessionStorage.clear();
+              window.location.href = "/";
+            }}>
+              Çıkış Yap
+            </button>
         </div>
     );
 }

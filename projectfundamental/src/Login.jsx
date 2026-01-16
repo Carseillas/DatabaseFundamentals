@@ -16,24 +16,24 @@ function Login() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })
     });
+    
     const data = await response.json();
+
     if (data.success) {
-      if(data.message === "Admin Login"){
-        setMessage("Admin Login Successful!");
-        sessionStorage.setItem("adminloggedIn", "true");
+      sessionStorage.clear();
+
+      sessionStorage.setItem("token", data.token);
+      sessionStorage.setItem("role", data.role);
+
+      if (data.role === "admin") {
         navigate("/Admin");
-        return;
-      }
-      else{
-        setMessage("Login successful!");
-        sessionStorage.setItem("teacherloggedIn", "true");
-        navigate("/RCallMain")
-        return;
+      } else if (data.role === "teacher"){
+        navigate("/RCallMain");
       }
     } else {
+      navigate("/");
       setMessage("Wrong username or password.");
-      sessionStorage.setItem("adminloggedIn", "false");
-      sessionStorage.setItem("teacherloggedIn", "false");
+      sessionStorage.clear();
     }
   }
 
