@@ -33,7 +33,7 @@ function RCall() {
 
     async function submitRollCall() {
         if (!date || !classNum  || !classHour || !subject || !note) {
-            setStatus("Please fill in all fields.");
+            setStatus("Lütfen tüm alanları doldurun");
             return;
         }
         const absentStudents = selectedStudents.map(num => Number(num));
@@ -53,10 +53,10 @@ function RCall() {
         const data = await res.json();
 
         if (data.success) {
-          setStatus("Yoklama Kaydedildi ✅");
+          setStatus("Yoklama Kaydedildi");
           setSelectedStudents([]);
         } else {
-          setStatus("Bir Sorun Oluştu ❌");
+          setStatus("Bir Sorun Oluştu");
         }
     }
 

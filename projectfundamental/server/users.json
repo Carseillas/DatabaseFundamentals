@@ -3,6 +3,12 @@
     "username": "admin",
     "password": "$2b$10$YMeZ3ykP4fYDHWO5ErHefuzz95LVQJQMANcvB.8F2xk3/kqX7WUqi",
     "role": "admin",
-    "token": "1c8b0b19-bf2c-4ffd-8e76-9e2fd5a7fb46"
+    "token": "5c0862e3-9689-4063-984d-bae31c97d5df"
+  },
+  {
+    "username": "1",
+    "password": "$2b$10$Vxfc3ZKN7CCeAXj6S4un...ccSPV3y3HpMidWopSdd3GGdx4bs8DK",
+    "role": "teacher",
+    "token": "fd279967-e1bb-48d3-9850-cb1a06dc14ed"
   }
 ]
